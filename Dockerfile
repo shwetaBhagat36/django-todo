@@ -2,14 +2,15 @@ FROM python:3
 RUN pip install django==3.2
 WORKDIR /app
 
-# Copy the requirements file and install dependencies
-COPY requirements.txt /app/
-RUN yum update && yum install -y python3-distutils
-RUN pip install -r requirements.txt
+# Install system dependencies for mysqlclient
+RUN apt-get update && apt-get install -y \
+    default-libmysqlclient-dev \
+    gcc \
+    && apt-get clean
 
 
 COPY . /app
  
-RUN python manage.py migrate
+RUN pip install --no-cache-dir -r requirements.txt
 EXPOSE 8000
 CMD ["python","manage.py","runserver","0.0.0.0:8000
